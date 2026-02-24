@@ -1,0 +1,446 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Daypo Clone - Cuestionarios Interactivos</title>
+    <meta
+      name="description"
+      content="Generador y lector de cuestionarios interactivos desde Word o PDF."
+    />
+
+    <!-- External Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.4.21/mammoth.browser.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <header>
+      <div class="logo" onclick="showView('home')">
+        <i class="fa-solid fa-bolt"></i>
+        <span>DaypoClone</span>
+        <span class="version-tag" id="header-version"></span>
+      </div>
+      <div class="nav-buttons">
+        <div
+          id="quiz-title-nav"
+          style="display: none; align-items: center; margin-right: 1rem"
+        >
+          <span class="status-badge" id="current-quiz-name">Sin título</span>
+        </div>
+        <button class="btn btn-outline" onclick="showView('home')">
+          <i class="fa-solid fa-house"></i> Inicio
+        </button>
+        <button
+          id="btn-back-editor"
+          class="btn btn-outline"
+          style="display: none"
+          onclick="showView('creator')"
+        >
+          <i class="fa-solid fa-arrow-left"></i> Volver al Editor
+        </button>
+        <button class="btn btn-outline info-btn" onclick="showAboutModal()" title="Acerca de">
+          <i class="fa-solid fa-circle-info"></i>
+        </button>
+      </div>
+    </header>
+
+    <main>
+      <!-- Home View -->
+      <div id="view-home" class="view active">
+        <div class="hero">
+          <h1>
+            Domina tus exámenes con
+            <span style="color: var(--primary)">Inteligencia</span>
+          </h1>
+          <p style="margin-bottom: 4rem;">
+            Importa tus apuntes desde Word o PDF y conviértelos en cuestionarios
+            interactivos en segundos.
+          </p>
+          <div class="mode-cards">
+            <div class="card mode-card" onclick="showView('creator')">
+              <i class="fa-solid fa-pen-to-square"></i>
+              <h3>Modo Creador</h3>
+              <p style="margin-bottom: 1rem;">Crea, importa y edita cuestionarios.</p>
+            </div>
+            <div class="card mode-card" onclick="triggerReaderImport()">
+              <i class="fa-solid fa-circle-play"></i>
+              <h3>Modo Lector</h3>
+              <p style="margin-bottom: 1rem;">Realiza cuestionarios existentes.</p>
+              <input
+                type="file"
+                id="reader-file-input"
+                style="display: none"
+                accept=".txt"
+                onchange="handleReaderLoad(event)"
+              />
+            </div>
+          </div>
+
+          <!-- Archivos Recientes Lector -->
+          <div class="recent-files-container" style="margin-top: 3rem; text-align: left; max-width: 600px; margin-left: auto; margin-right: auto; background: var(--surface); padding: 1.5rem; border-radius: 12px; border: 1px solid var(--border);">
+            <h3 style="margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; font-size: 1.1rem;">
+              <i class="fa-solid fa-clock-rotate-left"></i> Recientes en Lector
+            </h3>
+            <div id="recent-files-list" style="display: flex; flex-direction: column; gap: 0.5rem;">
+              <!-- rendered items via JS -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Creator View -->
+      <div id="view-creator" class="view">
+        <div class="layout-with-sidebar no-sidebar" id="creator-layout">
+          <aside
+            class="sidebar"
+            id="creator-sidebar-container"
+            style="display: none"
+          >
+            <h3>
+              <i class="fa-solid fa-list-ol" style="width:18px; margin-right:0.5rem;"></i>
+              Navegación <span class="status-badge" id="q-count-badge">0</span>
+            </h3>
+            <div class="nav-list" id="creator-sidebar">
+              <!-- Sidebar items injected here -->
+            </div>
+          </aside>
+
+          <div class="card" style="flex: 1">
+            <div
+              style="
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 2rem;
+              "
+            >
+              <h2 style="display: flex; align-items: center; gap: 0.75rem;">
+                <i class="fa-solid fa-gear" style="color: var(--primary);"></i>
+                Gestionar Cuestionario
+              </h2>
+              <div style="display: flex; gap: 0.5rem">
+                <button
+                  id="btn-creator-cancel"
+                  class="btn btn-outline"
+                  style="color: var(--error);"
+                  onclick="showView('home')"
+                >
+                  <i class="fa-solid fa-xmark"></i> Cancelar
+                </button>
+                <div id="creator-actions" style="display: none; gap: 0.5rem">
+                  <button
+                    class="btn btn-outline"
+                    onclick="startQuizFromCreator()"
+                  >
+                    <i class="fa-solid fa-play"></i> Probar ahora
+                  </button>
+                  <button class="btn btn-primary" onclick="exportToMarkdown()">
+                    <i class="fa-solid fa-save"></i> Guardar cuestionario
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="input-group">
+              <label>Título del Cuestionario</label>
+              <input
+                type="text"
+                id="quiz-title"
+                placeholder="Ej: Anatomía Humana - Tema 1"
+              />
+            </div>
+
+            <div id="import-area">
+              <div class="drop-zone" id="drop-zone">
+                <i
+                  class="fa-solid fa-cloud-arrow-up"
+                  style="
+                    font-size: 48px;
+                    color: var(--primary);
+                    margin-bottom: 1rem;
+                  "
+                ></i>
+                <h3>Importar Documento</h3>
+                <p>Arrastra aquí tu .docx, .pdf o .txt o haz clic para seleccionar</p>
+                <input type="file" id="file-input" hidden accept=".docx, .pdf, .txt" />
+              </div>
+              
+              <!-- File Info & Processing Controls -->
+              <div id="file-info" style="display: none; flex-direction: column; gap: 1.5rem; padding: 1.5rem; background: var(--surface-accent); border-radius: 12px; border: 1px solid var(--border);">
+                 <div style="display: flex; align-items: center; gap: 1rem;">
+                    <i class="fa-solid fa-file-pdf" id="file-icon" style="font-size: 24px; color: var(--primary);"></i>
+                    <div style="flex: 1;">
+                       <span id="file-name-text" style="font-weight: 600;">documento.pdf</span>
+                       <p id="file-status-text" style="font-size: 0.75rem; color: var(--text-dim); margin: 0;">Archivo seleccionado</p>
+                    </div>
+                    <button class="btn btn-outline" style="color: var(--error); border-color: transparent;" onclick="clearImportedFile()" title="Eliminar y subir otro">
+                       <i class="fa-solid fa-trash-can"></i>
+                    </button>
+                 </div>
+
+                  <div id="raw-text-container" style="display: none; flex-direction: column; gap: 0.5rem; margin-top: 1rem;">
+                    <label style="font-size: 0.85rem; font-weight: 600; color: var(--text-dim);">Texto extraído (puedes corregirlo aquí):</label>
+                    <textarea id="raw-text-area" style="min-height: 200px; font-family: 'Courier New', Courier, monospace; font-size: 0.9rem; padding: 1rem; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; resize: vertical;"></textarea>
+                  </div>
+
+                  <div style="border-top: 1px solid var(--border); padding-top: 1rem; display: flex; flex-direction: column; gap: 1rem;">
+                    <div style="display: flex; align-items: center; justify-content: space-between;">
+                        <span style="font-size: 0.9rem; font-weight: 500;">Procesar archivo con IA</span>
+                        <label class="switch">
+                            <input type="checkbox" id="ai-toggle" checked>
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+                    <div id="import-process-actions" style="display: flex; gap: 0.5rem;">
+                        <button class="btn btn-outline" id="btn-extract-text" style="flex: 1; justify-content: center;" onclick="extractAndReviewText()">
+                            <i class="fa-solid fa-file-export"></i> Extraer Texto
+                        </button>
+                        <button class="btn btn-primary" id="btn-process-file" style="flex: 2; justify-content: center; display: none;" onclick="processSelectedFile()">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i> Generar Cuestionario
+                        </button>
+                    </div>
+                    <button class="btn btn-primary" id="btn-quick-process" style="width: 100%; justify-content: center;" onclick="processSelectedFile()">
+                        <i class="fa-solid fa-bolt"></i> Procesar Directo
+                    </button>
+                  </div>
+              </div>
+            </div>
+
+            <div id="questions-list" style="margin-top: 2rem">
+              <!-- Questions will be injected here -->
+            </div>
+
+            <button
+              id="btn-add-manual"
+              class="btn btn-outline"
+              style="width: 100%; margin-top: 1rem"
+              onclick="addNewQuestion()"
+            >
+              <i class="fa-solid fa-plus"></i> Añadir Pregunta Manualmente
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Reader View -->
+      <div id="view-reader" class="view">
+        <div class="layout-with-sidebar">
+          <aside class="sidebar">
+            <button
+              class="btn btn-outline"
+              style="
+                width: 100%;
+                margin-bottom: 1rem;
+                justify-content: center;
+              "
+              onclick="restartQuiz()"
+            >
+              <i class="fa-solid fa-rotate-left"></i> Reiniciar Test
+            </button>
+            <button
+              id="reveal-all-btn"
+              class="btn btn-outline"
+              style="
+                width: 100%;
+                margin-bottom: 1.5rem;
+                justify-content: center;
+              "
+              onclick="revealAll()"
+            >
+              <i class="fa-solid fa-eye" id="reveal-all-icon"></i> <span id="reveal-all-text">Revelar Todos</span>
+            </button>
+            <h3 style="display: flex; align-items: center; gap: 0.5rem;">
+              <i class="fa-solid fa-list-check" style="width:18px;"></i>
+              Índice del Test
+            </h3>
+            <div class="nav-list" id="reader-sidebar">
+              <!-- Index items -->
+            </div>
+          </aside>
+
+          <div class="reader-main-content">
+            <div class="stats-row">
+              <div class="stat-card">
+                <i class="fa-solid fa-circle-check" style="opacity:0.6;"></i>
+                <div class="info">
+                   <span class="val" id="stat-completed">0 / 0</span>
+                   <span class="label">Completadas</span>
+                </div>
+              </div>
+              <div class="stat-card">
+                <i class="fa-solid fa-circle-question" style="opacity:0.6;"></i>
+                <div class="info">
+                   <span class="val" id="stat-pending">0</span>
+                   <span class="label">Pendientes</span>
+                </div>
+              </div>
+              <div class="stat-card" style="color: var(--success)">
+                <i class="fa-solid fa-face-smile"></i>
+                <div class="info">
+                   <span class="val" id="stat-correct">0</span>
+                   <span class="label">Correctas</span>
+                </div>
+              </div>
+              <div class="stat-card" style="color: var(--error)">
+                <i class="fa-solid fa-face-frown"></i>
+                <div class="info">
+                   <span class="val" id="stat-wrong">0</span>
+                   <span class="label">Incorrectas</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="quiz-header">
+              <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill"></div>
+              </div>
+              <span id="progress-text">1 / 10</span>
+            </div>
+
+            <div id="question-container" style="min-height: 0; flex: 1; overflow-y: auto;">
+              <!-- Current question injected here -->
+            </div>
+
+            <div class="action-footer">
+              <button
+                class="btn btn-outline"
+                id="prev-btn"
+                onclick="prevQuestion()"
+              >
+                <i class="fa-solid fa-chevron-left"></i> Anterior
+              </button>
+              <button
+                class="btn btn-outline"
+                id="reveal-current-btn"
+                style="
+                  flex: 1;
+                  justify-content: center;
+                "
+                onclick="revealCurrent()"
+              >
+                <i class="fa-solid fa-eye"></i> Revelar Respuesta
+              </button>
+              <button
+                class="btn btn-outline"
+                id="next-btn"
+                onclick="nextQuestion()"
+              >
+                Siguiente <i class="fa-solid fa-chevron-right"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <button
+        id="scroll-top"
+        onclick="window.scrollTo({ top: 0, behavior: 'smooth' })"
+      >
+        <i class="fa-solid fa-arrow-up"></i>
+      </button>
+
+      <!-- Results View -->
+      <div id="view-results" class="view">
+        <div class="card text-center" style="text-align: center">
+          <div id="result-icon-container" style="margin-bottom: 1.5rem">
+            <i
+              class="fa-solid fa-award"
+              style="font-size: 64px; color: var(--primary)"
+            ></i>
+          </div>
+          <h2 id="result-title">¡Cuestionario Completado!</h2>
+          <div class="result-stats">
+            <div class="stat-item">
+              <i class="fa-solid fa-chart-pie" style="margin-bottom:0.5rem; opacity:0.7;"></i>
+              <span class="stat-value" id="res-score">0%</span>
+              <span class="stat-label">Puntuación</span>
+            </div>
+            <div class="stat-item">
+              <i class="fa-solid fa-circle-check" style="margin-bottom:0.5rem; color:var(--success);"></i>
+              <span class="stat-value" id="res-correct">0</span>
+              <span class="stat-label">Correctas</span>
+            </div>
+            <div class="stat-item">
+              <i class="fa-solid fa-list" style="margin-bottom:0.5rem; opacity:0.7;"></i>
+              <span class="stat-value" id="res-total">0</span>
+              <span class="stat-label">Total</span>
+            </div>
+          </div>
+          <div style="display: flex; gap: 1rem; justify-content: center">
+            <button class="btn btn-primary" onclick="restartQuiz()">
+              <i class="fa-solid fa-rotate-left"></i> Reintentar
+            </button>
+            <button class="btn btn-outline" onclick="showView('home')">
+              <i class="fa-solid fa-house"></i> Ir al Inicio
+            </button>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Progress Modal -->
+    <div id="modal-progress" class="modal">
+      <div class="modal-content" style="max-width: 400px;">
+        <div class="modal-header">
+          <h2 id="progress-modal-title">Procesando...</h2>
+          <button class="close-btn" onclick="cancelProcessing()">&times;</button>
+        </div>
+        <div class="modal-body" style="padding: 2rem; text-align: center;">
+          <div id="progress-spinner" class="spinner" style="margin-bottom: 1.5rem;"></div>
+          <p id="progress-status-text" style="margin-bottom: 1.5rem; font-weight: 500;">Iniciando proceso...</p>
+          <div class="progress-bar" style="height: 10px; background: var(--surface-accent);">
+            <div id="ai-progress-fill" class="progress-fill" style="width: 0%; background: var(--primary);"></div>
+          </div>
+          <p id="progress-percent" style="font-size: 0.8rem; color: var(--text-dim); margin-top: 0.5rem;">0%</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- About Modal -->
+    <div id="modal-about" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Acerca de DaypoClone</h2>
+          <button class="close-btn" onclick="closeAboutModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div class="about-grid">
+            <div class="about-item">
+              <i class="fa-solid fa-user"></i>
+              <div>
+                <strong>Creador</strong>
+                <p>Firo</p>
+              </div>
+            </div>
+            <div class="about-item">
+              <i class="fa-solid fa-envelope"></i>
+              <div>
+                <strong>Contacto</strong>
+                <p><a href="mailto:firogv96@outlook.com">firogv96@outlook.com</a></p>
+              </div>
+            </div>
+            <div class="about-item">
+              <i class="fa-solid fa-code-branch"></i>
+              <div>
+                <strong>Versión</strong>
+                <p id="about-version"></p>
+              </div>
+            </div>
+            <div class="about-item">
+              <i class="fa-solid fa-book"></i>
+              <div>
+                <strong>Documentación</strong>
+                <p><a href="https://github.com/firogv96/clon-daypo#readme" target="_blank">Ver Readme en GitHub</a></p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script type="module" src="js/main.js"></script>
+  </body>
+</html>
