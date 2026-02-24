@@ -8,6 +8,7 @@
       name="description"
       content="Generador y lector de cuestionarios interactivos desde Word o PDF."
     />
+    <link rel="icon" href="assets/icons/favicon.svg" type="image/svg+xml" />
 
     <!-- External Libraries -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.4.21/mammoth.browser.min.js"></script>
@@ -395,6 +396,24 @@
             <div id="ai-progress-fill" class="progress-fill" style="width: 0%; background: var(--primary);"></div>
           </div>
           <p id="progress-percent" style="font-size: 0.8rem; color: var(--text-dim); margin-top: 0.5rem;">0%</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mobile Warning Overlay -->
+    <div id="mobile-warning-overlay" class="modal" style="z-index: 9999;">
+      <div class="modal-content" style="max-width: 350px; text-align: center; border-top: 4px solid var(--error); position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); margin: 0; width: 90%;">
+        <div class="modal-header" style="justify-content: center; border-bottom: none; padding-bottom: 0;">
+          <i class="fa-solid fa-triangle-exclamation" style="font-size: 3rem; color: var(--error);"></i>
+        </div>
+        <div class="modal-body">
+          <h2 style="margin-bottom: 1rem; color: var(--text);">Aviso de compatibilidad</h2>
+          <p style="margin-bottom: 1.5rem; line-height: 1.5; color: var(--text-dim);">
+            Este sitio web no ha sido optimizado para su uso en teléfonos móviles ni en pequeñas pantallas, no se garantiza el funcionamiento correcto de la interfaz si accede desde estos dispositivos. Se recomienda acceder desde un ordenador o una tablet.
+          </p>
+          <button class="btn btn-outline" style="width: 100%; justify-content: center; border-color: var(--error); color: var(--error);" onclick="dismissMobileWarning()">
+            Entendido, continuar
+          </button>
         </div>
       </div>
     </div>

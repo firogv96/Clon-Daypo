@@ -119,6 +119,11 @@ window.showAboutModal = () => {
 window.closeAboutModal = () => {
     document.getElementById("modal-about").classList.remove("active");
 };
+window.dismissMobileWarning = () => {
+    const overlay = document.getElementById('mobile-warning-overlay');
+    if (overlay) overlay.classList.remove('active');
+    sessionStorage.setItem('mobileWarningDismissed', 'true');
+};
 
 // Scroll event
 window.onscroll = function() {
@@ -156,6 +161,12 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     }
     
+    // Mobile warning check
+    if (window.innerWidth < 768 && !sessionStorage.getItem('mobileWarningDismissed')) {
+        const warningModal = document.getElementById('mobile-warning-overlay');
+        if (warningModal) warningModal.classList.add('active');
+    }
+
     // Initialize version
     const headerVersion = document.getElementById("header-version");
     const aboutVersion = document.getElementById("about-version");

@@ -38,6 +38,12 @@ A diferencia de otras páginas web, **ningún documento, apunte o examen que sub
 
 ---
 
+## ⚠️ Compatibilidad de Dispositivos
+
+Este sitio web no ha sido optimizado para su uso en teléfonos móviles ni en pequeñas pantallas, por lo que no se garantiza el funcionamiento correcto de la interfaz si accede desde estos dispositivos. Se recomienda acceder desde un ordenador o una tablet para una experiencia óptima. Aunque se mostrará una advertencia si accedes desde un dispositivo móvil, podrás continuar asumiendo que algunos elementos pueden no visualizarse o funcionar correctamente.
+
+---
+
 ## 🚀 ¿Cómo se utiliza?
 
 ¡Es muy fácil! No tienes que instalar aplicaciones complicadas.
