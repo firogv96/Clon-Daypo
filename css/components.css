@@ -386,6 +386,15 @@ textarea:focus {
   transition: 0.4s;
 }
 
+/* Specific visibility improvement for the theme switch track */
+.theme-switch-wrapper .slider {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="dark"] .theme-switch-wrapper .slider {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
 .slider:before {
   position: absolute;
   content: "";
@@ -395,6 +404,7 @@ textarea:focus {
   bottom: 3px;
   background-color: white;
   transition: 0.4s;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 input:checked + .slider {
@@ -464,7 +474,6 @@ input:checked + .slider:before {
   border-radius: 12px;
   transition: var(--transition);
   cursor: pointer;
-  margin-right: 0.5rem;
 }
 
 .theme-switch-wrapper:hover {
@@ -482,20 +491,22 @@ input:checked + .slider:before {
 
 .theme-switch-wrapper i.fa-sun {
   color: #fbbf24; /* Amber-400 */
+  filter: drop-shadow(0 0 2px rgba(251, 191, 36, 0.2));
 }
 
 .theme-switch-wrapper i.fa-moon {
   color: #818cf8; /* Indigo-400 */
+  filter: drop-shadow(0 0 2px rgba(129, 140, 248, 0.2));
 }
 
 [data-theme="dark"] .theme-switch-wrapper i.fa-sun {
-  opacity: 0.3;
-  filter: grayscale(1);
+  opacity: 0.45;
+  filter: grayscale(1) opacity(0.5);
 }
 
 :root:not([data-theme="dark"]) .theme-switch-wrapper i.fa-moon {
-  opacity: 0.3;
-  filter: grayscale(1);
+  opacity: 0.45;
+  filter: grayscale(1) opacity(0.5);
 }
 
 .theme-switch-wrapper .switch {
