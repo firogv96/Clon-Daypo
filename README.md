@@ -16,18 +16,18 @@ Clon Daypo se divide en dos modos principales: el **Modo Creador** (para diseña
 
 - **Carga fácil de documentos:** Sube tus apuntes en formato **TXT**, documento de Word (**DOCX**) o PDF (**PDF**).
 - **Inteligencia artificial en tu navegador:** Nuestro sistema es capaz de analizar tu documento y ayudarte a detectar cuáles son las preguntas y cuáles son las opciones de respuesta de manera automática. (Las primeras veces puede que descargue un pequeño modelo de IA directamente en tu navegador, mostrando una barra de progreso).
-- **Vista previa en tiempo real:** Revisa en todo momento cómo se verá el test que estás creando usando la pestaña de "Preview" o "Vista previa".
+- **Vista previa en tiempo real:** Revisa en todo momento cómo se verá el test que estás creando usando la pestaña de "Vista previa".
 - **Navegación Intuitiva:** Mientras editas, tienes un panel lateral que baja contigo y resalta la pregunta en la que estás trabajando, para que nunca te pierdas.
-- **Exporta tus tests:** Una vez tengas listo tu examen, guárdalo y descárgalo como un archivo compatible para usarlo más adelante en el Modo Lector.
+- **Exporta tus tests:** Una vez tengas listo tu examen, guárdalo y descárgalo como un archivo **TXT** compatible para usarlo más adelante en el Modo Lector.
 
 ### 📖 2. Modo Lector (Estudia y ponte a prueba)
 
-¡Es hora de estudiar! Sube tus tests previamente guardados (archivos .txt) y ponte a prueba.
+Sube tus tests previamente guardados (archivos .txt) y ponte a prueba.
 
 - **Ambiente libre de distracciones:** Resuelve las preguntas usando una interfaz limpia.
-- **Mostrar u ocultar respuestas:** Puedes revelar la respuesta correcta para una sola pregunta si tienes dudas, o usar el botón **"Revelar Todo"** (Reveal All) como un interruptor para mostrar u ocultar todas las respuestas correctas de una vez.
+- **Mostrar u ocultar respuestas:** Puedes revelar la respuesta correcta para una sola pregunta si tienes dudas, o usar el botón **"Revelar Todo"** Como un interruptor para mostrar u ocultar todas las respuestas correctas de una vez.
 - **Panel de Estadísticas:** Observa en la parte superior tu progreso de estudio: cuántas preguntas has respondido, tus aciertos y errores de manera visual.
-- **Lista de archivos recientes (Recent Files):** Desde el menú de inicio puedes encontrar rápidamente los últimos 5 archivos que has cargado en este modo, para que puedas retomar tu estudio en segundos.
+- **Lista de archivos recientes:** Desde el menú de inicio puedes encontrar rápidamente los últimos 5 archivos que has cargado en este modo, para que puedas retomar tu estudio en segundos.
 
 ---
 
