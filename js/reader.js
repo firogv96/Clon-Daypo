@@ -86,13 +86,14 @@ export function renderQuestion() {
   const isEnd = readerState.currentIndex === currentQuiz.questions.length - 1;
   const nextBtn = document.getElementById("next-btn");
   
-  if (isEnd && readerState.results.every(r => r !== null)) {
+  if (isEnd) {
       nextBtn.innerHTML = 'Ver Resultados <i class="fa-solid fa-award"></i>';
       nextBtn.onclick = showResults;
+      nextBtn.disabled = false;
   } else {
       nextBtn.innerHTML = 'Siguiente <i class="fa-solid fa-chevron-right"></i>';
       nextBtn.onclick = nextQuestion;
-      nextBtn.disabled = isEnd;
+      nextBtn.disabled = false;
   }
 
   container.innerHTML = `
@@ -184,13 +185,20 @@ export function prevQuestion() {
 
 export function showResults() {
   showView("results");
-  const perc = Math.round(
-    (readerState.score / currentQuiz.questions.length) * 100,
-  );
+  const total = currentQuiz.questions.length;
+  const correct = readerState.results.filter(r => r === true).length;
+  const wrong = readerState.results.filter(r => r === false).length;
+  const skipped = readerState.results.filter(r => r === null).length;
+  
+  const perc = total > 0 ? Math.round((correct / total) * 100) : 0;
+  const wrongPerc = total > 0 ? Math.round((wrong / total) * 100) : 0;
+
   document.getElementById("res-score").textContent = `${perc}%`;
-  document.getElementById("res-correct").textContent = readerState.score;
-  document.getElementById("res-total").textContent =
-    currentQuiz.questions.length;
+  document.getElementById("res-wrong-perc").textContent = `${wrongPerc}%`;
+  document.getElementById("res-correct").textContent = correct;
+  document.getElementById("res-wrong").textContent = wrong;
+  document.getElementById("res-skipped").textContent = skipped;
+  document.getElementById("res-total").textContent = total;
 
   const icon = document.querySelector("#result-icon-container i");
   if (perc >= 70) {
@@ -212,4 +220,9 @@ export function showResults() {
 
 export function restartQuiz() {
   startQuiz();
+}
+
+export function reviewQuiz() {
+  readerState.currentIndex = 0;
+  showView("reader");
 }

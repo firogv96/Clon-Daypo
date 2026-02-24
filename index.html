@@ -365,10 +365,15 @@
           </div>
           <h2 id="result-title">¡Cuestionario Completado!</h2>
           <div class="result-stats">
-            <div class="stat-item">
+            <div class="stat-item" style="color: var(--success)">
               <i class="fa-solid fa-chart-pie" style="margin-bottom:0.5rem; opacity:0.7;"></i>
               <span class="stat-value" id="res-score">0%</span>
-              <span class="stat-label">Puntuación</span>
+              <span class="stat-label">Éxito</span>
+            </div>
+            <div class="stat-item" style="color: var(--error)">
+              <i class="fa-solid fa-chart-line" style="margin-bottom:0.5rem; opacity:0.7;"></i>
+              <span class="stat-value" id="res-wrong-perc">0%</span>
+              <span class="stat-label">Fallos</span>
             </div>
             <div class="stat-item">
               <i class="fa-solid fa-circle-check" style="margin-bottom:0.5rem; color:var(--success);"></i>
@@ -376,17 +381,30 @@
               <span class="stat-label">Correctas</span>
             </div>
             <div class="stat-item">
+              <i class="fa-solid fa-circle-xmark" style="margin-bottom:0.5rem; color:var(--error);"></i>
+              <span class="stat-value" id="res-wrong">0</span>
+              <span class="stat-label">Incorrectas</span>
+            </div>
+            <div class="stat-item" style="color: var(--text-dim)">
+              <i class="fa-solid fa-forward-step" style="margin-bottom:0.5rem; opacity:0.7;"></i>
+              <span class="stat-value" id="res-skipped">0</span>
+              <span class="stat-label">Saltadas</span>
+            </div>
+            <div class="stat-item">
               <i class="fa-solid fa-list" style="margin-bottom:0.5rem; opacity:0.7;"></i>
               <span class="stat-value" id="res-total">0</span>
               <span class="stat-label">Total</span>
             </div>
           </div>
-          <div style="display: flex; gap: 1rem; justify-content: center">
+          <div class="result-actions">
+            <button class="btn btn-outline" onclick="reviewQuiz()">
+              <i class="fa-solid fa-magnifying-glass"></i> Revisar Test
+            </button>
             <button class="btn btn-primary" onclick="restartQuiz()">
-              <i class="fa-solid fa-rotate-left"></i> Reintentar
+              <i class="fa-solid fa-rotate-left"></i> Reiniciar Test
             </button>
             <button class="btn btn-outline" onclick="showView('home')">
-              <i class="fa-solid fa-house"></i> Ir al Inicio
+              <i class="fa-solid fa-house"></i> Volver al Inicio
             </button>
           </div>
         </div>

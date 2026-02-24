@@ -1,7 +1,7 @@
 import { showView, trackActiveCreatorQuestion } from './navigation.js';
 import { handleFile, exportToMarkdown, parseMarkdown, processSelectedFile, extractAndReviewText, cancelProcessing } from './importer.js';
 import { renderEditor, updateQuestion, updateOption, removeQuestion, addOption, removeOption, setCorrect, addNewQuestion, addQuestionAt, clearImportedFile } from './editor.js';
-import { startQuiz, checkAnswer, revealCurrent, revealAll, nextQuestion, prevQuestion, restartQuiz } from './reader.js';
+import { startQuiz, checkAnswer, revealCurrent, revealAll, nextQuestion, prevQuestion, restartQuiz, reviewQuiz } from './reader.js';
 import { currentQuiz, comingFromCreator, APP_VERSION } from './state.js';
 import { initTheme } from './theme.js';
 
@@ -113,6 +113,7 @@ window.revealAll = revealAll;
 window.nextQuestion = nextQuestion;
 window.prevQuestion = prevQuestion;
 window.restartQuiz = restartQuiz;
+window.reviewQuiz = reviewQuiz;
 
 window.showAboutModal = () => {
     document.getElementById("modal-about").classList.add("active");

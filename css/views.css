@@ -131,10 +131,27 @@
 .result-stats {
   display: flex;
   justify-content: space-around;
+  flex-wrap: wrap;
+  gap: 2rem;
   margin: 2rem 0;
-  padding: 2rem;
+  padding: 2.5rem;
   background: var(--surface-accent);
   border-radius: 20px;
+}
+
+.result-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+
+@media (max-width: 650px) {
+  .result-actions {
+    flex-direction: column;
+  }
+  .result-actions .btn {
+    width: 100%;
+  }
 }
 
 .stat-item {
