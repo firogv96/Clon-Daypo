@@ -3,6 +3,7 @@ import { handleFile, exportToMarkdown, parseMarkdown, processSelectedFile, extra
 import { renderEditor, updateQuestion, updateOption, removeQuestion, addOption, removeOption, setCorrect, addNewQuestion, addQuestionAt, clearImportedFile } from './editor.js';
 import { startQuiz, checkAnswer, revealCurrent, revealAll, nextQuestion, prevQuestion, restartQuiz } from './reader.js';
 import { currentQuiz, comingFromCreator, APP_VERSION } from './state.js';
+import { initTheme } from './theme.js';
 
 // Setup PDF worker
 if (window.pdfjsLib) {
@@ -143,6 +144,7 @@ window.onscroll = function() {
 
 // Importer logic (DOM)
 document.addEventListener('DOMContentLoaded', () => {
+    initTheme();
     const dropZone = document.getElementById("drop-zone");
     const fileInput = document.getElementById("file-input");
     if (dropZone && fileInput) {

@@ -40,11 +40,11 @@ header {
 }
 
 .info-btn {
-  width: 44px;
-  height: 44px;
+  width: 40px;
+  height: 40px;
   padding: 0 !important;
   justify-content: center;
-  font-size: 1.25rem;
+  font-size: 1.1rem;
 }
 
 .nav-buttons {
@@ -132,6 +132,7 @@ body:has(#view-reader.active) {
   flex-direction: column;
   overflow: hidden;
   z-index: 50;
+  transition: var(--transition);
 }
 
 #view-reader .sidebar {
