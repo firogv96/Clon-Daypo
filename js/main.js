@@ -122,7 +122,6 @@ window.closeAboutModal = () => {
 window.dismissMobileWarning = () => {
     const overlay = document.getElementById('mobile-warning-overlay');
     if (overlay) overlay.classList.remove('active');
-    sessionStorage.setItem('mobileWarningDismissed', 'true');
 };
 
 // Scroll event
@@ -162,7 +161,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     // Mobile warning check
-    if (window.innerWidth < 768 && !sessionStorage.getItem('mobileWarningDismissed')) {
+    if (window.innerWidth < 768) {
         const warningModal = document.getElementById('mobile-warning-overlay');
         if (warningModal) warningModal.classList.add('active');
     }
