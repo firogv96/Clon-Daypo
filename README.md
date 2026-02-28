@@ -1,5 +1,7 @@
 # Clon Daypo - Creador y Lector de Tests Interactivo 📝✨
 
+![Clon Daypo Preview](assets/preview.png)
+
 ¡Bienvenido a **Clon Daypo**! Esta es una herramienta educativa gratuita, diseñada para que cualquier persona pueda crear, estudiar y contestar exámenes o tests de opción múltiple de una forma sencilla, rápida y sin necesidad de tener conocimientos técnicos.
 
 Este proyecto nació con fines didácticos (apoyado en Inteligencia Artificial) y tiene como objetivo brindar una experiencia de estudio fluida y respetuosa con tu privacidad.

@@ -1,6 +1,6 @@
 /* --- Layout --- */
 header {
-  height: 72px;
+  height: 60px;
   padding: 0 2rem;
   display: flex;
   justify-content: space-between;
@@ -58,7 +58,7 @@ main {
   width: 100%;
   max-width: 1260px;
   margin: 0 auto;
-  padding: 2rem;
+  padding: 1rem;
 }
 
 .view {
@@ -71,9 +71,9 @@ main {
 }
 
 #view-reader.active {
-  display: flex;
+  display: flex !important;
   flex-direction: column;
-  height: calc(100vh - 144px); /* Reduced from 160px (80*2) to 144px (72*2) */
+  height: calc(100vh - 60px - 2rem);
   overflow: hidden;
 }
 
@@ -99,12 +99,15 @@ body:has(#view-reader.active) {
   gap: 2.5rem;
   align-items: stretch; /* Use stretch instead of start to ensure full height sidebars */
   transition: grid-template-columns 0.3s ease;
+  flex: 1;
+  min-height: 0;
 }
 
 #view-reader .layout-with-sidebar {
   flex: 1;
   min-height: 0;
   height: 100%;
+  overflow: hidden;
 }
 
 .layout-with-sidebar.no-sidebar {
@@ -122,8 +125,8 @@ body:has(#view-reader.active) {
 
 .sidebar {
   position: sticky;
-  top: calc(72px + 2rem);
-  height: calc(100vh - 72px - 4rem);
+  /* top: calc(60px + 2rem); */
+  height: calc(100vh - 30px - 4rem);
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 20px;
@@ -139,8 +142,6 @@ body:has(#view-reader.active) {
   position: relative;
   top: 0;
   height: 100%;
-  max-height: none;
-  overflow: hidden;
 }
 
 .sidebar h3 {
@@ -164,6 +165,7 @@ body:has(#view-reader.active) {
   z-index: 10;
 }
 
+#view-creator .layout-with-sidebar > .card,
 .reader-main-content {
   flex: 1;
   display: flex;
