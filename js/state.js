@@ -1,5 +1,3 @@
-export const APP_VERSION = "v1.2.0";
-
 export let currentQuiz = {
   title: "Nuevo Cuestionario",
   questions: [],
@@ -31,6 +29,9 @@ export function resetQuizState() {
   currentQuiz.title = "Nuevo Cuestionario";
   currentQuiz.questions = [];
   currentQuiz.fileName = null;
+  currentQuiz.selectedFile = null;
+  currentQuiz.useIA = true;
+  currentQuiz.extractedText = "";
   comingFromCreator.value = false;
   
   // Also reset reader state to be sure

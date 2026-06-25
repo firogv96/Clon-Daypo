@@ -1,9 +1,85 @@
 import { showView, trackActiveCreatorQuestion } from './navigation.js';
 import { handleFile, exportToMarkdown, parseMarkdown, processSelectedFile, extractAndReviewText, cancelProcessing } from './importer.js';
 import { renderEditor, updateQuestion, updateOption, removeQuestion, addOption, removeOption, setCorrect, addNewQuestion, addQuestionAt, clearImportedFile } from './editor.js';
-import { startQuiz, checkAnswer, revealCurrent, revealAll, nextQuestion, prevQuestion, restartQuiz, reviewQuiz } from './reader.js';
-import { currentQuiz, comingFromCreator, APP_VERSION } from './state.js';
+import { startQuiz, checkAnswer, revealCurrent, revealAll, nextQuestion, prevQuestion, restartQuiz, reviewQuiz, isPlayableQuiz } from './reader.js';
+import { currentQuiz, comingFromCreator } from './state.js';
 import { initTheme } from './theme.js';
+
+const READER_HISTORY_KEY = 'readerHistory';
+const MAX_READER_HISTORY = 5;
+
+function parseVersionConfig(text) {
+    const match = text.match(/^\s*version\s*=\s*(.+?)\s*$/m);
+    return match ? match[1] : '';
+}
+
+async function loadAppVersion() {
+    try {
+        const response = await fetch('version.conf', { cache: 'no-store' });
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        return parseVersionConfig(await response.text());
+    } catch (error) {
+        console.warn('No se pudo cargar version.conf.', error);
+        return '';
+    }
+}
+
+function renderAppVersion(version) {
+    const headerVersion = document.getElementById("header-version");
+    const aboutVersion = document.getElementById("about-version");
+    if (headerVersion) headerVersion.textContent = version;
+    if (aboutVersion) aboutVersion.textContent = version || 'No disponible';
+}
+function createIcon(className, style = '') {
+    const icon = document.createElement('i');
+    icon.className = className;
+    if (style) icon.setAttribute('style', style);
+    return icon;
+}
+
+function getReaderHistory() {
+    try {
+        const parsed = JSON.parse(localStorage.getItem(READER_HISTORY_KEY) || '[]');
+        return Array.isArray(parsed) ? parsed : [];
+    } catch (error) {
+        console.warn('Historial de lector corrupto, se reinicia.', error);
+        localStorage.removeItem(READER_HISTORY_KEY);
+        return [];
+    }
+}
+
+function saveReaderHistory(history) {
+    try {
+        localStorage.setItem(READER_HISTORY_KEY, JSON.stringify(history.slice(0, MAX_READER_HISTORY)));
+        return true;
+    } catch (error) {
+        console.warn('No se pudo guardar el historial del lector.', error);
+        alert('El navegador no pudo guardar este archivo en recientes. Puedes seguir usando el test.');
+        return false;
+    }
+}
+
+function loadQuizText(text, sourceName, shouldSaveRecent) {
+    const quiz = parseMarkdown(text);
+    if (!isPlayableQuiz(quiz)) {
+        alert('El archivo no contiene un cuestionario valido. Revisa que tenga titulo, preguntas y al menos dos opciones por pregunta.');
+        return false;
+    }
+
+    if (shouldSaveRecent) {
+        let history = getReaderHistory();
+        history = history.filter(item => item.name !== sourceName);
+        history.unshift({ name: sourceName, content: text, date: new Date().toISOString() });
+        saveReaderHistory(history);
+        if (window.renderRecentFiles) window.renderRecentFiles();
+    }
+
+    currentQuiz.title = quiz.title;
+    currentQuiz.questions = quiz.questions;
+    comingFromCreator.value = false;
+    startQuiz();
+    return true;
+}
 
 // Setup PDF worker
 if (window.pdfjsLib) {
@@ -27,9 +103,8 @@ window.processSelectedFile = processSelectedFile;
 window.extractAndReviewText = extractAndReviewText;
 window.cancelProcessing = cancelProcessing;
 window.startQuizFromCreator = () => {
-    if (currentQuiz.questions.length === 0) return alert("Añade algunas preguntas primero.");
     comingFromCreator.value = true;
-    startQuiz();
+    if (!startQuiz()) comingFromCreator.value = false;
 };
 window.triggerReaderImport = () => document.getElementById("reader-file-input").click();
 window.handleReaderLoad = (event) => {
@@ -42,68 +117,71 @@ window.handleReaderLoad = (event) => {
         return;
     }
 
-    // Clear input value so same file can be selected again
     event.target.value = "";
 
     const reader = new FileReader();
     reader.onload = (e) => {
-        const text = e.target.result;
-        
-        // Guardar en el historial
-        let history = JSON.parse(localStorage.getItem('readerHistory') || '[]');
-        history = history.filter(item => item.name !== file.name);
-        history.unshift({ name: file.name, content: text, date: new Date().toISOString() });
-        if (history.length > 5) history = history.slice(0, 5);
-        localStorage.setItem('readerHistory', JSON.stringify(history));
-        if (window.renderRecentFiles) window.renderRecentFiles();
-
-        const quiz = parseMarkdown(text);
-        currentQuiz.title = quiz.title;
-        currentQuiz.questions = quiz.questions;
-        comingFromCreator.value = false;
-        startQuiz();
+        loadQuizText(e.target.result || '', file.name, true);
     };
+    reader.onerror = () => alert('No se pudo leer el archivo seleccionado.');
     reader.readAsText(file);
 };
 
 window.renderRecentFiles = () => {
     const container = document.getElementById('recent-files-list');
     if (!container) return;
-    const history = JSON.parse(localStorage.getItem('readerHistory') || '[]');
-    
+    const history = getReaderHistory();
+
+    container.replaceChildren();
+
     if (history.length === 0) {
-        container.innerHTML = '<p style="color: var(--text-dim); text-align: center; font-size: 0.9rem; margin: 1rem 0;">No hay archivos recientes</p>';
+        const empty = document.createElement('p');
+        empty.setAttribute('style', 'color: var(--text-dim); text-align: center; font-size: 0.9rem; margin: 1rem 0;');
+        empty.textContent = 'No hay archivos recientes';
+        container.appendChild(empty);
         return;
     }
-    
-    container.innerHTML = history.map((item, index) => `
-        <div class="recent-file-item" onclick="loadFromHistory(${index})">
-            <i class="fa-solid fa-file-lines" style="color: var(--primary); font-size: 1.2rem;"></i>
-            <div style="flex: 1; margin-left: 0.75rem; overflow: hidden;">
-                <div style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 500;">${item.name}</div>
-                <div style="font-size: 0.75rem; color: var(--text-dim);">${new Date(item.date).toLocaleDateString()}</div>
-            </div>
-            <i class="fa-solid fa-chevron-right" style="font-size: 0.8rem; color: var(--text-dim);"></i>
-        </div>
-    `).join('');
+
+    history.forEach((item, index) => {
+        const row = document.createElement('div');
+        row.className = 'recent-file-item';
+        row.onclick = () => window.loadFromHistory(index);
+
+        row.appendChild(createIcon('fa-solid fa-file-lines', 'color: var(--primary); font-size: 1.2rem;'));
+
+        const info = document.createElement('div');
+        info.setAttribute('style', 'flex: 1; margin-left: 0.75rem; overflow: hidden;');
+
+        const name = document.createElement('div');
+        name.setAttribute('style', 'white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 500;');
+        name.textContent = item.name || 'Archivo sin nombre';
+
+        const date = document.createElement('div');
+        date.setAttribute('style', 'font-size: 0.75rem; color: var(--text-dim);');
+        const parsedDate = new Date(item.date);
+        date.textContent = Number.isNaN(parsedDate.getTime()) ? '' : parsedDate.toLocaleDateString();
+
+        info.append(name, date);
+        row.append(info, createIcon('fa-solid fa-chevron-right', 'font-size: 0.8rem; color: var(--text-dim);'));
+        container.appendChild(row);
+    });
 };
 
 window.loadFromHistory = (index) => {
-    const history = JSON.parse(localStorage.getItem('readerHistory') || '[]');
+    const history = getReaderHistory();
     const item = history[index];
-    if (item) {
-        // Mover arriba
-        const clickedItem = history.splice(index, 1)[0];
-        clickedItem.date = new Date().toISOString();
-        history.unshift(clickedItem);
-        localStorage.setItem('readerHistory', JSON.stringify(history));
-        window.renderRecentFiles();
+    if (!item) return;
 
-        const quiz = parseMarkdown(item.content);
-        currentQuiz.title = quiz.title;
-        currentQuiz.questions = quiz.questions;
-        comingFromCreator.value = false;
-        startQuiz();
+    const clickedItem = history.splice(index, 1)[0];
+    clickedItem.date = new Date().toISOString();
+    history.unshift(clickedItem);
+    saveReaderHistory(history);
+    window.renderRecentFiles();
+
+    if (!loadQuizText(item.content || '', item.name || 'Archivo reciente', false)) {
+        const cleaned = getReaderHistory().filter((_, historyIndex) => historyIndex !== 0);
+        saveReaderHistory(cleaned);
+        window.renderRecentFiles();
     }
 };
 
@@ -127,6 +205,7 @@ window.dismissMobileWarning = () => {
 };
 
 // Scroll event
+let creatorScrollFrame = null;
 window.onscroll = function() {
   const btn = document.getElementById('scroll-top');
   if (btn) {
@@ -136,10 +215,13 @@ window.onscroll = function() {
           btn.style.display = 'none';
       }
   }
-  
+
   const creatorView = document.getElementById('view-creator');
-  if (creatorView && creatorView.classList.contains('active')) {
-      trackActiveCreatorQuestion();
+  if (creatorView && creatorView.classList.contains('active') && creatorScrollFrame === null) {
+      creatorScrollFrame = requestAnimationFrame(() => {
+          creatorScrollFrame = null;
+          trackActiveCreatorQuestion();
+      });
   }
 };
 
@@ -162,35 +244,29 @@ document.addEventListener('DOMContentLoaded', () => {
           handleFile(e.dataTransfer.files[0]);
         };
     }
-    
-    // Mobile warning check
+
     if (window.innerWidth < 768) {
         const warningModal = document.getElementById('mobile-warning-overlay');
         if (warningModal) warningModal.classList.add('active');
     }
 
-    // Initialize version
-    const headerVersion = document.getElementById("header-version");
-    const aboutVersion = document.getElementById("about-version");
-    if (headerVersion) headerVersion.textContent = APP_VERSION;
-    if (aboutVersion) aboutVersion.textContent = APP_VERSION;
+    loadAppVersion().then(renderAppVersion);
 
-    // Close modals on click outside
     const modalAbout = document.getElementById("modal-about");
     const modalProgress = document.getElementById("modal-progress");
-    
+
     if (modalAbout) {
         modalAbout.onclick = (e) => {
             if (e.target === modalAbout) closeAboutModal();
         };
     }
-    
+
     if (modalProgress) {
         modalProgress.onclick = (e) => {
             if (e.target === modalProgress) cancelProcessing();
         };
     }
-    
+
     if (window.renderRecentFiles) {
         window.renderRecentFiles();
     }

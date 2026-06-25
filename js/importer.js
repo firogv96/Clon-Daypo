@@ -5,6 +5,7 @@ let classifier; // El modelo ya cargado
 let classifierPromise = null; // La promesa de la descarga en curso
 let isProcessingCancelled = false;
 let isCurrentlyProcessing = false;
+let lastProgressPercent = 0;
 
 export async function handleFile(file) {
   if (!file) return;
@@ -313,17 +314,19 @@ async function processWithZeroShotIA(text) {
     if (!classifier) {
         // Si no existe, pero hay una promesa de descarga activa, esperamos a ESA promesa
         if (!classifierPromise) {
-            updateProgress(15, "Iniciando descarga del modelo IA...");
+            updateProgress(20, "Iniciando descarga del modelo IA...");
             classifierPromise = pipeline('zero-shot-classification', 'Xenova/mobilebert-uncased-mnli', {
                 progress_callback: (data) => {
                     // Solo actualizamos la UI si el modal está abierto (no cancelado)
                     if (!isProcessingCancelled && data.status === 'progress') {
-                        updateProgress(15 + (data.progress / 100 * 40), `Descargando IA... ${Math.round(data.progress)}%`);
+                        const rawProgress = Number.isFinite(data.progress) ? data.progress : 0;
+                        const downloadProgress = Math.max(0, Math.min(100, rawProgress));
+                        updateProgress(20 + (downloadProgress / 100 * 40), `Descargando IA... ${Math.round(downloadProgress)}%`);
                     }
                 }
             });
         } else {
-            updateProgress(15, "Reanudando conexión con descarga en curso...");
+            updateProgress(20, "Reanudando conexión con descarga en curso...");
         }
 
         classifier = await classifierPromise;
@@ -331,7 +334,7 @@ async function processWithZeroShotIA(text) {
 
     if (isProcessingCancelled) throw new Error("CANCELLED");
 
-    updateProgress(60, "Analizando estructura del cuestionario...");
+    updateProgress(65, "Analizando estructura del cuestionario...");
     
     const lines = text.split("\n").map(l => l.trim()).filter(l => l.length > 2);
     const questions = [];
@@ -341,7 +344,7 @@ async function processWithZeroShotIA(text) {
     for (let i = 0; i < lines.length; i++) {
         if (isProcessingCancelled) throw new Error("CANCELLED");
         const line = lines[i];
-        updateProgress(60 + (i / lines.length * 35), `Analizando línea ${i+1}/${lines.length}`);
+        updateProgress(65 + (i / Math.max(lines.length, 1) * 30), `Analizando línea ${i+1}/${lines.length}`);
 
         // Regla: Empieza por número (1. o 1)) seguido de espacio/tab
         const startsWithQNum = /^\d+[\.\)](\s|\t)+/.test(line);
@@ -413,6 +416,7 @@ async function processWithZeroShotIA(text) {
 
   } catch (error) {
     isCurrentlyProcessing = false;
+    if (!classifier) classifierPromise = null;
     throw error;
   }
 }
@@ -472,6 +476,16 @@ export function parseMarkdown(md) {
   return quiz;
 }
 
+function safeDownloadName(title) {
+  const cleaned = (title || "cuestionario")
+    .trim()
+    .replace(/[<>:"/\\|?*\x00-\x1F]/g, "")
+    .replace(/\s+/g, "_")
+    .replace(/_+/g, "_")
+    .slice(0, 80);
+  return `${cleaned || "cuestionario"}.txt`;
+}
+
 export function exportToMarkdown() {
   let md = `# ${currentQuiz.title}\n\n`;
   currentQuiz.questions.forEach(q => {
@@ -485,23 +499,41 @@ export function exportToMarkdown() {
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
-  a.download = `${currentQuiz.title.replace(/\s+/g, "_")}.txt`;
+  a.download = safeDownloadName(currentQuiz.title);
   a.click();
+  URL.revokeObjectURL(url);
 }
-
 function showProgressModal(show) {
     const modal = document.getElementById("modal-progress");
-    if (show) modal.classList.add("active");
-    else modal.classList.remove("active");
+    if (!modal) return;
+
+    if (show) {
+        resetProgress();
+        modal.classList.add("active");
+    } else {
+        modal.classList.remove("active");
+    }
+}
+
+function resetProgress() {
+    lastProgressPercent = 0;
+    const fill = document.getElementById("ai-progress-fill");
+    const percentEl = document.getElementById("progress-percent");
+    if (fill) fill.style.width = "0%";
+    if (percentEl) percentEl.textContent = "0%";
 }
 
 function updateProgress(percent, text) {
     const fill = document.getElementById("ai-progress-fill");
     const textEl = document.getElementById("progress-status-text");
     const percentEl = document.getElementById("progress-percent");
-    if (fill) fill.style.width = `${percent}%`;
+    const normalizedPercent = Math.max(0, Math.min(100, Number.isFinite(percent) ? percent : 0));
+    const visiblePercent = Math.max(lastProgressPercent, normalizedPercent);
+    lastProgressPercent = visiblePercent;
+
+    if (fill) fill.style.width = `${visiblePercent}%`;
     if (textEl) textEl.textContent = text;
-    if (percentEl) percentEl.textContent = `${Math.round(percent)}%`;
+    if (percentEl) percentEl.textContent = `${Math.round(visiblePercent)}%`;
 }
 
 export function cancelProcessing() {

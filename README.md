@@ -1,67 +1,61 @@
-# Clon Daypo - Creador y Lector de Tests Interactivo 📝✨
+# Clon Daypo - Creador y Lector de Tests Interactivo
 
 ![Clon Daypo Preview](assets/preview.png)
 
-¡Bienvenido a **Clon Daypo**! Esta es una herramienta educativa gratuita, diseñada para que cualquier persona pueda crear, estudiar y contestar exámenes o tests de opción múltiple de una forma sencilla, rápida y sin necesidad de tener conocimientos técnicos.
+Bienvenido a **Clon Daypo**. Esta es una herramienta educativa gratuita, disenada para crear, estudiar y contestar examenes o tests de opcion multiple de una forma sencilla, rapida y sin necesidad de conocimientos tecnicos.
 
-Este proyecto nació con fines didácticos (apoyado en Inteligencia Artificial) y tiene como objetivo brindar una experiencia de estudio fluida y respetuosa con tu privacidad.
+Este proyecto nacio con fines didacticos, apoyado en Inteligencia Artificial, y busca ofrecer una experiencia de estudio fluida manteniendo el procesamiento de tus documentos dentro del navegador.
 
 ---
 
-## 🌟 ¿Qué puedes hacer con esta herramienta?
+## Que puedes hacer con esta herramienta
 
-Clon Daypo se divide en dos modos principales: el **Modo Creador** (para diseñar tus exámenes) y el **Modo Lector** (para poner a prueba tus conocimientos).
+Clon Daypo se divide en dos modos principales: el **Modo Creador** para disenar tus examenes y el **Modo Lector** para poner a prueba tus conocimientos.
 
-### 🛠️ 1. Modo Creador (Crea tus propios exámenes)
+### 1. Modo Creador
 
-¿Tienes apuntes y quieres convertirlos en un test? Aquí puedes hacerlo de forma asistida:
+- **Carga facil de documentos:** Sube apuntes en formato **TXT**, documento de Word (**DOCX**) o PDF (**PDF**).
+- **Inteligencia artificial en tu navegador:** El sistema puede analizar el texto y ayudarte a detectar preguntas y opciones de respuesta. La primera vez puede descargar un modelo de IA en el navegador, mostrando una barra de progreso.
+- **Navegacion intuitiva:** Mientras editas, tienes un panel lateral que baja contigo y resalta la pregunta en la que estas trabajando.
+- **Exporta tus tests:** Guarda el cuestionario como un archivo **TXT** compatible con el Modo Lector.
 
-- **Carga fácil de documentos:** Sube tus apuntes en formato **TXT**, documento de Word (**DOCX**) o PDF (**PDF**).
-- **Inteligencia artificial en tu navegador:** Nuestro sistema es capaz de analizar tu documento y ayudarte a detectar cuáles son las preguntas y cuáles son las opciones de respuesta de manera automática. (Las primeras veces puede que descargue un pequeño modelo de IA directamente en tu navegador, mostrando una barra de progreso).
-- **Vista previa en tiempo real:** Revisa en todo momento cómo se verá el test que estás creando usando la pestaña de "Vista previa".
-- **Navegación Intuitiva:** Mientras editas, tienes un panel lateral que baja contigo y resalta la pregunta en la que estás trabajando, para que nunca te pierdas.
-- **Exporta tus tests:** Una vez tengas listo tu examen, guárdalo y descárgalo como un archivo **TXT** compatible para usarlo más adelante en el Modo Lector.
+### 2. Modo Lector
 
-### 📖 2. Modo Lector (Estudia y ponte a prueba)
-
-Sube tus tests previamente guardados (archivos .txt) y ponte a prueba.
+Sube tus tests guardados en archivos `.txt` y practica.
 
 - **Ambiente libre de distracciones:** Resuelve las preguntas usando una interfaz limpia.
-- **Mostrar u ocultar respuestas:** Puedes revelar la respuesta correcta para una sola pregunta si tienes dudas, o usar el botón **"Revelar Todo"** Como un interruptor para mostrar u ocultar todas las respuestas correctas de una vez.
-- **Panel de Estadísticas:** Observa en la parte superior tu progreso de estudio: cuántas preguntas has respondido, tus aciertos y errores de manera visual.
-- **Lista de archivos recientes:** Desde el menú de inicio puedes encontrar rápidamente los últimos 5 archivos que has cargado en este modo, para que puedas retomar tu estudio en segundos.
+- **Mostrar u ocultar respuestas:** Puedes revelar la respuesta correcta para una pregunta o usar **Revelar Todos** como interruptor.
+- **Panel de estadisticas:** Observa cuantas preguntas has respondido, aciertos y errores.
+- **Lista de archivos recientes:** Desde el inicio puedes abrir rapidamente los ultimos 5 archivos cargados en modo lector.
 
 ---
 
-## 🔒 Tu privacidad es primero (Totalmente Offline y Local)
+## Privacidad y dependencias externas
 
-Lo más importante de Clon Daypo es que **tus archivos son tuyos**.
-A diferencia de otras páginas web, **ningún documento, apunte o examen que subas a este programa se envía a Internet**. Todo el procesamiento de los archivos, la lectura y la inteligencia artificial ocurren directamente dentro de tu propia computadora (en tu navegador). Por lo tanto, tu información es 100% privada y, una vez cargada la página, puede funcionar incluso si pierdes tu conexión a Internet.
-
----
-
-## ⚠️ Compatibilidad de Dispositivos
-
-Este sitio web no ha sido optimizado para su uso en teléfonos móviles ni en pequeñas pantallas, por lo que no se garantiza el funcionamiento correcto de la interfaz si accede desde estos dispositivos. Se recomienda acceder desde un ordenador o una tablet para una experiencia óptima. Aunque se mostrará una advertencia si accedes desde un dispositivo móvil, podrás continuar asumiendo que algunos elementos pueden no visualizarse o funcionar correctamente.
+El contenido de los documentos se lee y se procesa en tu navegador. La aplicacion usa dependencias externas desde CDN para librerias, iconos, analitica y el modelo de IA, por lo que requiere conexion a Internet para cargar ciertos recursos y no debe considerarse una aplicacion totalmente offline.
 
 ---
 
-## 🚀 ¿Cómo se utiliza?
+## Compatibilidad de dispositivos
 
-¡Es muy fácil! No tienes que instalar aplicaciones complicadas.
-
-1. Simplemente abre la página principal.
-2. Verás dos grandes botones: **Crear** (Create) y **Leer** (Reader).
-3. Entra a **Crear** si quieres hacer un examen a partir de tus notas o de un Word / PDF. Arrastra tu archivo a la zona indicada y deja que la aplicación haga el resto.
-4. Entra a **Leer**, selecciona el archivo `.txt` del test que habías guardado previamente y comienza a practicar.
+Este sitio web no ha sido optimizado para telefonos moviles ni pantallas pequenas, por lo que no se garantiza el funcionamiento correcto de la interfaz en esos dispositivos. Se recomienda acceder desde un ordenador o una tablet.
 
 ---
 
-## 💌 Acerca del Proyecto
+## Como se utiliza
 
-Este proyecto es una creación de **Firo**.
+1. Abre la pagina principal.
+2. Elige **Crear** o **Leer**.
+3. Entra a **Crear** para generar o editar un cuestionario desde tus apuntes.
+4. Entra a **Leer** para seleccionar un archivo `.txt` exportado y comenzar a practicar.
 
-Para consultas, ideas o información adicional, puedes ponerte en contacto:
-📧 Email: firogv96@outlook.com
+---
 
-_(Para revisar la versión actual del proyecto y más detalles, puedes dar clic en el botón de "Acerca de / About" ubicado en la esquina superior derecha de la aplicación)._
+## Acerca del proyecto
+
+Este proyecto es una creacion de **Firo**.
+
+Para consultas, ideas o informacion adicional, puedes ponerte en contacto:
+firogv96@outlook.com
+
+Puedes revisar la version actual desde el boton **Acerca de** ubicado en la esquina superior derecha de la aplicacion.

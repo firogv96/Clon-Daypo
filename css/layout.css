@@ -97,7 +97,7 @@ body:has(#view-reader.active) {
   display: grid;
   grid-template-columns: 288px 1fr;
   gap: 2.5rem;
-  align-items: stretch; /* Use stretch instead of start to ensure full height sidebars */
+  align-items: start;
   transition: grid-template-columns 0.3s ease;
   flex: 1;
   min-height: 0;
@@ -125,8 +125,9 @@ body:has(#view-reader.active) {
 
 .sidebar {
   position: sticky;
-  /* top: calc(60px + 2rem); */
-  height: calc(100vh - 30px - 4rem);
+  top: calc(60px + 1rem);
+  max-height: calc(100vh - 60px - 2rem);
+  height: calc(100vh - 60px - 2rem);
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 20px;
@@ -141,6 +142,7 @@ body:has(#view-reader.active) {
 #view-reader .sidebar {
   position: relative;
   top: 0;
+  max-height: none;
   height: 100%;
 }
 
